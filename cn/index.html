@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>美语说 DAILY TALK (国内增强版)</title>
+    <style>
+        body { margin: 0; padding: 20px; background-color: #e0e5ec; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; }
+        .header-tag { font-size: 14px; font-weight: bold; color: #888; margin-bottom: 20px; letter-spacing: 2px; }
+        .card-outer { width: 100%; background: #e0e5ec; border-radius: 30px; box-shadow: 15px 15px 30px #bec3c9, -15px -15px 30px #ffffff; padding: 15px; box-sizing: border-box; text-align: center; }
+        .image-box { width: 100%; height: auto; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 6px 6px 12px #bec3c9, inset -6px -6px 12px #ffffff; background: #ffffff; display: flex; flex-direction: column; }
+        .card-image { width: 100%; height: auto; display: block; }
+        .en-text { display: block; font-size: 24px; font-weight: bold; margin: 10px 0; color: #333; line-height: 1.3; }
+        .cn-text { display: block; font-size: 16px; color: #777; margin-bottom: 10px; }
+        .controls { margin-top: 25px; display: flex; gap: 25px; align-items: center; }
+        .neu-btn { background: #e0e5ec; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 7px 7px 14px #bec3c9, -7px -7px 14px #ffffff; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; outline:none; }
+        .neu-btn:active { box-shadow: inset 4px 4px 8px #bec3c9, inset -4px -4px 8px #ffffff; transform: scale(0.95); }
+        .circle { width: 75px; height: 75px; border-radius: 50%; font-size: 32px; }
+        .square { width: 65px; height: 65px; border-radius: 18px; font-size: 28px; }
+        .hint { font-size: 10px; color: #aaa; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-tag">DAILY TALK 国内版</div>
+    <div class="card-outer">
+        <div class="image-box"><img id="card-image" src="" alt="card"></div>
+        <div id="en-text" class="en-text">...</div>
+        <div id="cn-text" class="cn-text">...</div>
+    </div>
+    <div class="controls"><button class="neu-btn circle" onclick="speak()">🔊</button></div>
+    <div class="controls">
+        <button class="neu-btn square" onclick="prev()">🐱</button>
+        <button class="neu-btn square" onclick="next()">🐶</button>
+    </div>
+    <div class="hint">若无声，请先点猫咪或狗狗按钮激活</div>
+</div>
+<script>
+    const cardList = [
+        { en: "Keep your chin up", cn: "别灰心，抬起头来", id: "1" },
+        { en: "Every cloud has a silver lining", cn: "困境中总有一线希望", id: "2" },
+        { en: "Stay gold", cn: "保持纯真，不忘初心", id: "3" },
+        { en: "Believe in yourself", cn: "相信你自己", id: "4" },
+        { en: "Carpe diem", cn: "及时行乐，抓紧当下", id: "5" },
+        { en: "Follow your heart", cn: "追随你的内心", id: "6" },
+        { en: "Stay hungry, stay foolish", cn: "求知若渴，虚心若愚", id: "7" },
+        { en: "Love keeps us alive", cn: "爱让我们充满生机", id: "8" },
+        { en: "Nothing is impossible", cn: "万事皆有可能", id: "9" },
+        { en: "Live the life you love", cn: "过你热爱的生活", id: "10" },
+        { en: "The best is yet to come", cn: "最好的尚未来临", id: "11" },
+        { en: "Never give up", cn: "永不言弃", id: "12" },
+        { en: "Light up the world", cn: "照亮这个世界", id: "13" },
+        { en: "Enjoy the little things", cn: "享受生活中的小确幸", id: "14" },
+        { en: "Be fearless", cn: "无所畏惧", id: "15" },
+        { en: "Dream big", cn: "心怀大志", id: "16" },
+        { en: "Keep on going", cn: "勇往直前", id: "17" },
+        { en: "Silence is golden", cn: "沉默是金", id: "18" },
+        { en: "Keep it simple", cn: "简单就好", id: "19" },
+        { en: "Chase the sun", cn: "追逐阳光", id: "20" },
+        { en: "Stay positive", cn: "保持乐观", id: "21" },
+        { en: "Listen to the wind", cn: "倾听风的声音", id: "22" },
+        { en: "Always be kind", cn: "永远保持善良", id: "23" },
+        { en: "You are enough", cn: "你已经足够优秀", id: "24" }
+    ];
+    let idx = 0;
+    function update() {
+        const item = cardList[idx];
+        // 关键点：使用 ../ 访问上一级目录的 images
+        document.getElementById('card-image').src = "../images/" + item.id + ".webp";
+        document.getElementById('en-text').innerText = item.en;
+        document.getElementById('cn-text').innerText = item.cn;
+        window.speechSynthesis.cancel();
+    }
+    function speak() {
+        const text = cardList[idx].en;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        u.rate = 0.8;
+        window.speechSynthesis.speak(u);
+    }
+    function next() { idx = (idx + 1) % cardList.length; update(); }
+    function prev() { idx = (idx - 1 + cardList.length) % cardList.length; update(); }
+    window.onload = update;
+</script>
+</body>
+</html>
