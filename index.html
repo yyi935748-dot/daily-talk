@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美语说 DAILY TALK</title>
+    <style>
+        /* 全局样式 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #e0e5ec;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 改为顶部对齐，防止长图超出顶部 */
+            min-height: 100vh;
+            color: #444;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px; /* 取消320px限制，改为较宽松的500px */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-tag {
+            font-size: 14px;
+            font-weight: bold;
+            color: #777;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* 卡片设计 */
+        .card-outer {
+            width: 100%;
+            background: #e0e5ec;
+            border-radius: 30px;
+            box-shadow: 20px 20px 60px #bec3c9, -20px -20px 60px #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* 图片框：彻底取消高度限制 */
+        .image-box {
+            width: 100%;
+            height: auto; 
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 6px 6px 12px #bec3c9, inset -6px -6px 12px #ffffff;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 图片样式：宽度100%，高度自动，绝对不裁切 */
+        .card-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .text-group {
+            padding: 10px 0;
+        }
+
+        .en-text {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+            line-height: 1.2;
+        }
+
+        .cn-text {
+            display: block;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        /* 按钮设计 */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .neu-btn {
+            background: #e0e5ec;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            box-shadow: 8px 8px 16px #bec3c9, -8px -8px 16px #ffffff;
+            color: #555;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .neu-btn:active {
+            box-shadow: inset 4px 4px 8px #bec3c9, inset -4px -4px 8px #ffffff;
+            transform: scale(0.95);
+        }
+
+        .circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 30px;
+        }
+
+        .square {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            font-size: 26px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-tag">美语说 DAILY TALK</div>
+
+    <div class="card-outer">
+        <div class="image-box">
+            <!-- 图片自适应宽度且不裁切 -->
+            <img id="card-image" class="card-image" src="" alt="drawing">
+        </div>
+        <div class="text-group">
+            <div id="en-text" class="en-text"></div>
+            <div id="cn-text" class="cn-text"></div>
+        </div>
+    </div>
+
+    <!-- 拟态按钮 -->
+    <div class="controls">
+        <button class="neu-btn circle" onclick="playAudio()">🔊</button>
+    </div>
+
+    <div class="controls">
+        <button class="neu-btn square" onclick="prevCard()">🐱</button>
+        <button class="neu-btn square" onclick="nextCard()">🐶</button>
+    </div>
+</div>
+
+<script>
+    const cardList = [
+        { en: "Keep your chin up", cn: "别灰心，抬起头来", imgId: "1" },
+        { en: "Every cloud has a silver lining", cn: "困境中总有一线希望", imgId: "2" },
+        { en: "Stay gold", cn: "保持纯真，不忘初心", imgId: "3" },
+        { en: "Believe in yourself", cn: "相信你自己", imgId: "4" },
+        { en: "Carpe diem", cn: "及时行乐，抓紧当下", imgId: "5" },
+        { en: "Follow your heart", cn: "追随你的内心", imgId: "6" },
+        { en: "Stay hungry, stay foolish", cn: "求知若渴，虚心若愚", imgId: "7" },
+        { en: "Love keeps us alive", cn: "爱让我们充满生机", imgId: "8" },
+        { en: "Nothing is impossible", cn: "万事皆有可能", imgId: "9" },
+        { en: "Live the life you love", cn: "过你热爱的生活", imgId: "10" },
+        { en: "The best is yet to come", cn: "最好的尚未来临", imgId: "11" },
+        { en: "Never give up", cn: "永不言弃", imgId: "12" },
+        { en: "Light up the world", cn: "照亮这个世界", imgId: "13" },
+        { en: "Enjoy the little things", cn: "享受生活中的小确幸", imgId: "14" },
+        { en: "Be fearless", cn: "无所畏惧", imgId: "15" },
+        { en: "Dream big", cn: "心怀大志", imgId: "16" },
+        { en: "Keep on going", cn: "勇往直前", imgId: "17" },
+        { en: "Silence is golden", cn: "沉默是金", imgId: "18" },
+        { en: "Keep it simple", cn: "简单就好", imgId: "19" },
+        { en: "Chase the sun", cn: "追逐阳光", imgId: "20" },
+        { en: "Stay positive", cn: "保持乐观", imgId: "21" },
+        { en: "Listen to the wind", cn: "倾听风的声音", imgId: "22" },
+        { en: "Always be kind", cn: "永远保持善良", imgId: "23" },
+        { en: "You are enough", cn: "你已经足够优秀", imgId: "24" }
+    ];
+
+    let currentIndex = 0;
+
+    function updateCard(index) {
+        currentIndex = index;
+        const card = cardList[currentIndex];
+        document.getElementById('en-text').innerText = card.en;
+        document.getElementById('cn-text').innerText = card.cn;
+        document.getElementById('card-image').src = "images/" + card.imgId + ".webp";
+        
+        // 每次切卡片时，停止之前的说话，防止声音重叠
+        window.speechSynthesis.cancel();
+    }
+
+    // 声音终极解决方案
+    function playAudio() {
+        const text = cardList[currentIndex].en;
+
+        // 停止之前的声音
+        window.speechSynthesis.cancel();
+
+        // 创建语音对象
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; // 设定为美式英语
+        utterance.rate = 0.9;      // 语速稍微慢一点点，听得更清楚
+        utterance.pitch = 1.0;     // 音调正常
+
+        // 核心：直接调用浏览器原生引擎
+        window.speechSynthesis.speak(utterance);
+        
+        // 调试反馈：如果你在电脑端按F12，可以看到是否触发
+        console.log("正在播放: " + text);
+    }
+
+    function nextCard() {
+        currentIndex = (currentIndex + 1) % cardList.length;
+        updateCard(currentIndex);
+    }
+
+    function prevCard() {
+        currentIndex = (currentIndex - 1 + cardList.length) % cardList.length;
+        updateCard(currentIndex);
+    }
+
+    // 初始化
+    window.onload = () => {
+        updateCard(0);
+    };
+</script>
+
+</body>
+</html>
